@@ -74,8 +74,8 @@ def configure_requests_for_localhost():
 
 if __name__ == "__main__":
     if GITHUB_CONTEXT["event"]["head_commit"]["message"].startswith("evalai_bot"):
-    print("Sync from Evalai")
-    sys.exit(0)
+        print("Sync from Evalai")
+        sys.exit(0)
 
     
     configs = load_host_configs(HOST_CONFIG_FILE_PATH)
