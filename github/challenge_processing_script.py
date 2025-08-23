@@ -21,6 +21,15 @@ from utils import (
     is_localhost_url,
 )
 
+# Debug: Check what variables were imported from config
+print(f"DEBUG: After config import:")
+print(f"  GITHUB_REPOSITORY = {GITHUB_REPOSITORY}")
+print(f"  GITHUB_BRANCH = {GITHUB_BRANCH}")
+print(f"  GITHUB_EVENT_NAME = {GITHUB_EVENT_NAME}")
+print(f"  VALIDATION_STEP = {VALIDATION_STEP}")
+print(f"  CHALLENGE_CONFIG_VALIDATION_URL = {CHALLENGE_CONFIG_VALIDATION_URL}")
+print(f"  CHALLENGE_CREATE_OR_UPDATE_URL = {CHALLENGE_CREATE_OR_UPDATE_URL}")
+
 sys.dont_write_bytecode = True
 
 # GitHub token from repository secrets (used for GitHub API operations like creating issues, PR comments)
@@ -39,6 +48,11 @@ GITHUB_AUTH_TOKEN = GITHUB_AUTH_TOKEN.strip()
 HOST_AUTH_TOKEN = None      # EvalAI user authentication token
 CHALLENGE_HOST_TEAM_PK = None  # EvalAI team ID
 EVALAI_HOST_URL = None      # EvalAI server URL
+
+# Fallback for GITHUB_BRANCH if not imported from config
+if 'GITHUB_BRANCH' not in globals():
+    GITHUB_BRANCH = os.getenv("GITHUB_REF_NAME") or os.getenv("GITHUB_BRANCH") or os.getenv("GITHUB_REF", "refs/heads/main").replace("refs/heads/", "") or "main"
+    print(f"DEBUG: GITHUB_BRANCH fallback defined: {GITHUB_BRANCH}")
 
 
 def is_localhost_url(url):
@@ -75,6 +89,123 @@ def configure_requests_for_localhost():
     # Disable SSL warnings for localhost development
     urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
     print("INFO: SSL verification disabled for localhost development server")
+
+
+def test_basic_connectivity(evalai_host_url):
+    """
+    Tests basic connectivity to the EvalAI server
+    """
+    print(f"\n🔍 Testing basic connectivity to EvalAI server...")
+    print(f"   URL: {evalai_host_url}")
+    
+    # Check if this is a Docker environment
+    if "host.docker.internal" in evalai_host_url:
+        print(f"   🐳 Docker environment detected (host.docker.internal)")
+        print(f"   💡 This means you're running from inside a Docker container")
+        print(f"   💡 host.docker.internal should resolve to the host machine")
+    
+    try:
+        # Try to access the root or admin endpoint
+        response = requests.get(
+            f"{evalai_host_url}/",
+            verify=not is_localhost_url(evalai_host_url),
+            timeout=10
+        )
+        print(f"   ✅ Root endpoint accessible (Status: {response.status_code})")
+        return True
+    except requests.exceptions.ConnectionError:
+        print(f"   ❌ Connection failed - server not reachable")
+        if "host.docker.internal" in evalai_host_url:
+            print(f"   🐳 Docker troubleshooting:")
+            print(f"      • Ensure EvalAI server is running on host machine")
+            print(f"      • Check if server is binding to 0.0.0.0:8000 (not just 127.0.0.1)")
+            print(f"      • Verify Docker can reach host.docker.internal")
+            print(f"      • Try using host machine's IP address instead")
+        return False
+    except Exception as e:
+        print(f"   ⚠️  Unexpected error: {e}")
+        return False
+
+
+def test_api_endpoints(evalai_host_url, team_pk, host_auth_token):
+    """
+    Tests different API endpoint patterns to find the correct one
+    """
+    print(f"\n🧪 Testing API endpoint patterns...")
+    print(f"   Team PK: {team_pk}")
+    print(f"   EvalAI Host: {evalai_host_url}")
+    
+    # Different endpoint patterns to test
+    endpoint_patterns = [
+        f"/api/v1/challenges/challenge_host_team/{team_pk}/validate_challenge_config/",
+        f"/api/challenges/challenge_host_team/{team_pk}/validate_challenge_config/",
+        f"/api/v1/challenges/{team_pk}/validate_challenge_config/",
+        f"/api/challenges/{team_pk}/validate_challenge_config/",
+        f"/api/v1/challenges/challenge/challenge_host_team/{team_pk}/validate_challenge_config/",
+        f"/api/challenges/challenge/challenge_host_team/{team_pk}/validate_challenge_config/",
+        # Additional patterns that might work
+        f"/api/v1/challenges/validate_challenge_config/",
+        f"/api/challenges/validate_challenge_config/",
+        f"/api/v1/challenge_host_team/{team_pk}/validate_challenge_config/",
+        f"/api/challenge_host_team/{team_pk}/validate_challenge_config/",
+        f"/api/v1/challenges/{team_pk}/validate/",
+        f"/api/challenges/{team_pk}/validate/",
+    ]
+    
+    results = {}
+    headers = get_request_header(host_auth_token)
+    
+    for pattern in endpoint_patterns:
+        test_url = f"{evalai_host_url}{pattern}"
+        print(f"\n   Testing: {pattern}")
+        
+        try:
+            # Send a simple GET request to test the endpoint
+            response = requests.get(
+                test_url, 
+                headers=headers, 
+                verify=not is_localhost_url(evalai_host_url),
+                timeout=10
+            )
+            
+            status = response.status_code
+            results[pattern] = {
+                "status": status,
+                "url": test_url,
+                "accessible": status != 404
+            }
+            
+            if status == 404:
+                print(f"     ❌ 404 Not Found")
+            elif status == 401:
+                print(f"     🔒 401 Unauthorized (endpoint exists but auth failed)")
+            elif status == 403:
+                print(f"     🚫 403 Forbidden (endpoint exists but access denied)")
+            elif status == 200:
+                print(f"     ✅ 200 OK (endpoint accessible)")
+            else:
+                print(f"     ⚠️  {status} (endpoint exists, status: {status})")
+                
+        except requests.exceptions.ConnectionError:
+            print(f"     ❌ Connection Error")
+            results[pattern] = {"status": "Connection Error", "url": test_url, "accessible": False}
+        except Exception as e:
+            print(f"     ❌ Error: {e}")
+            results[pattern] = {"status": f"Error: {e}", "url": test_url, "accessible": False}
+    
+    # Find the best endpoint
+    working_endpoints = [p for p, r in results.items() if r.get("accessible", False)]
+    
+    if working_endpoints:
+        print(f"\n✅ Found working endpoints:")
+        for endpoint in working_endpoints:
+            print(f"   • {endpoint}")
+        print(f"\n💡 Update your config.py with one of these working patterns")
+    else:
+        print(f"\n❌ No working endpoints found")
+        print(f"   Check your team_pk and EvalAI server configuration")
+    
+    return results
 
 
 def setup_one_way_sync():
@@ -256,12 +387,42 @@ if __name__ == "__main__":
             print(f"   3. Check if the API endpoint structure has changed")
             print(f"   4. Try accessing the EvalAI admin interface to verify team ID")
             
-            # Try to suggest alternative endpoint patterns
-            print(f"\n🔧 Alternative endpoint patterns to try:")
-            print(f"   • /api/v1/challenges/challenge_host_team/{CHALLENGE_HOST_TEAM_PK}/validate_challenge_config/")
-            print(f"   • /api/challenges/challenge_host_team/{CHALLENGE_HOST_TEAM_PK}/validate_challenge_config/")
-            print(f"   • /api/v1/challenges/{CHALLENGE_HOST_TEAM_PK}/validate_challenge_config/")
-            print(f"   • /api/challenges/{CHALLENGE_HOST_TEAM_PK}/validate_challenge_config/")
+            # First test basic connectivity
+            print(f"\n🔍 Testing basic server connectivity...")
+            if test_basic_connectivity(EVALAI_HOST_URL):
+                print(f"   ✅ Server is reachable, testing API endpoints...")
+                
+                # Automatically test different endpoint patterns
+                print(f"\n🧪 Automatically testing different endpoint patterns...")
+                endpoint_results = test_api_endpoints(EVALAI_HOST_URL, CHALLENGE_HOST_TEAM_PK, HOST_AUTH_TOKEN)
+                
+                if any(r.get("accessible", False) for r in endpoint_results.values()):
+                    print(f"\n✅ Found working endpoints! Update your config.py with one of these patterns:")
+                    for pattern, result in endpoint_results.items():
+                        if result.get("accessible", False):
+                            print(f"   • {pattern}")
+                else:
+                    print(f"\n❌ No working endpoints found. Please check:")
+                    print(f"   • Team PK is correct: {CHALLENGE_HOST_TEAM_PK}")
+                    print(f"   • EvalAI server is running at: {EVALAI_HOST_URL}")
+                    print(f"   • Your authentication token is valid")
+            else:
+                print(f"   ❌ Server is not reachable. Please check:")
+                print(f"   • EvalAI server is running")
+                print(f"   • URL is correct: {EVALAI_HOST_URL}")
+                print(f"   • Network connectivity")
+                
+                # Docker-specific suggestions
+                if "host.docker.internal" in EVALAI_HOST_URL:
+                    print(f"\n🐳 Docker-specific suggestions:")
+                    print(f"   • Try using host machine's actual IP address instead of host.docker.internal")
+                    print(f"   • Ensure EvalAI server is binding to 0.0.0.0:8000, not 127.0.0.1:8000")
+                    print(f"   • Check if host.docker.internal resolves correctly in your Docker environment")
+                    print(f"   • Alternative URLs to try:")
+                    print(f"     - http://172.17.0.1:8000 (Docker bridge network gateway)")
+                    print(f"     - http://host.docker.internal:8000 (current)")
+                    print(f"     - http://localhost:8000 (if running from host)")
+                    print(f"     - http://<your-host-ip>:8000 (your actual host IP)")
             
             error_message = f"\n404 Not Found: API endpoint not found at {url}"
             os.environ["CHALLENGE_ERRORS"] = error_message

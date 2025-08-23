@@ -14,7 +14,6 @@ API_HOST_URL = "https://eval.ai"
 IGNORE_DIRS = [
     ".git",
     ".github",
-    "github",
     "code_upload_challenge_evaluation",
     "remote_challenge_evaluation",
 ]
@@ -27,5 +26,13 @@ IGNORE_FILES = [
 ]
 CHALLENGE_ZIP_FILE_PATH = "challenge_config.zip"
 GITHUB_REPOSITORY = os.getenv("GITHUB_REPOSITORY")
+# GitHub branch - try multiple environment variables that might contain the branch name
+GITHUB_BRANCH = os.getenv("GITHUB_REF_NAME") or os.getenv("GITHUB_BRANCH") or os.getenv("GITHUB_REF", "refs/heads/main").replace("refs/heads/", "") or "main"
 GITHUB_EVENT_NAME = os.getenv("GITHUB_EVENT_NAME")
 VALIDATION_STEP = os.getenv("IS_VALIDATION")
+
+# Debug: Print the values to help troubleshoot
+print(f"DEBUG: GITHUB_REPOSITORY = {GITHUB_REPOSITORY}")
+print(f"DEBUG: GITHUB_BRANCH = {GITHUB_BRANCH}")
+print(f"DEBUG: GITHUB_EVENT_NAME = {GITHUB_EVENT_NAME}")
+print(f"DEBUG: VALIDATION_STEP = {VALIDATION_STEP}")
