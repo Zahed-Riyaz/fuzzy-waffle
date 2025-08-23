@@ -81,6 +81,48 @@ def configure_requests_for_localhost():
     print("INFO: SSL verification disabled for localhost development server")
 
 
+def test_github_access(github_token, repository):
+    """
+    Tests GitHub repository access to verify token permissions
+    """
+    print(f"\n🔍 Testing GitHub repository access...")
+    print(f"   Repository: {repository}")
+    print(f"   Token: {github_token[:8]}...{github_token[-4:] if len(github_token) > 12 else '***'}")
+    
+    try:
+        from github import Github
+        client = Github(github_token)
+        
+        # Try to get the repository
+        repo = client.get_repo(repository)
+        print(f"   ✅ Repository accessible: {repo.full_name}")
+        print(f"   📁 Default branch: {repo.default_branch}")
+        print(f"   🔒 Private: {repo.private}")
+        
+        # Check permissions
+        user = client.get_user()
+        print(f"   👤 Authenticated as: {user.login}")
+        
+        # Try to get repository contents
+        try:
+            contents = repo.get_contents("")
+            print(f"   📄 Repository contents accessible")
+        except Exception as e:
+            print(f"   ⚠️  Cannot read repository contents: {e}")
+        
+        return True
+        
+    except Exception as e:
+        print(f"   ❌ GitHub access failed: {e}")
+        if "Bad credentials" in str(e):
+            print(f"   💡 Token is invalid or expired")
+        elif "Not Found" in str(e):
+            print(f"   💡 Repository not found or token doesn't have access")
+        elif "Bad credentials" in str(e):
+            print(f"   💡 Token doesn't have sufficient permissions")
+        return False
+
+
 def test_basic_connectivity(evalai_host_url):
     """
     Tests basic connectivity to the EvalAI server
@@ -207,16 +249,31 @@ def setup_one_way_sync():
     print(f"   EvalAI Server: {EVALAI_HOST_URL}")
     print(f"   Using GitHub token: {GITHUB_AUTH_TOKEN[:8]}...{GITHUB_AUTH_TOKEN[-4:] if len(GITHUB_AUTH_TOKEN) > 12 else '***'}")
     
-    print("✅ One-way sync configuration completed!")
-    print("   EvalAI changes will automatically sync to GitHub")
-    print("   GitHub changes will NOT sync back to EvalAI (by design)")
-    print("\n💡 How it works:")
-    print("   1. Make changes in EvalAI UI")
-    print("   2. Changes are saved to database")
-    print("   3. Automatically triggers GitHub sync via Celery task")
-    print("   4. GitHub repository is updated with latest changes")
+    # Test GitHub repository access
+    github_access = test_github_access(GITHUB_AUTH_TOKEN, GITHUB_REPOSITORY)
     
-    return True
+    if github_access:
+        print(f"✅ GitHub repository access verified!")
+        print(f"   EvalAI changes will automatically sync to GitHub")
+        print(f"   GitHub changes will NOT sync back to EvalAI (by design)")
+        print("\n💡 How it works:")
+        print("   1. Make changes in EvalAI UI")
+        print("   2. Changes are saved to database")
+        print("   3. Automatically triggers GitHub sync via Celery task")
+        print("   4. GitHub repository is updated with latest changes")
+        
+        print(f"\n⚠️  IMPORTANT: Ensure your EvalAI challenge has these fields configured:")
+        print(f"   • github_repository: '{GITHUB_REPOSITORY}'")
+        print(f"   • github_branch: '{GITHUB_BRANCH}'")
+        print(f"   • github_token: [your GitHub personal access token]")
+        print(f"\n💡 These must be set in the EvalAI challenge settings for sync to work")
+        
+        return True
+    else:
+        print(f"❌ GitHub repository access failed!")
+        print(f"   EvalAI → GitHub sync will not work until this is resolved")
+        print(f"   Check your GitHub token permissions and repository access")
+        return False
 
 
 if __name__ == "__main__":
@@ -317,6 +374,21 @@ if __name__ == "__main__":
                         sync_status = check_sync_status(EVALAI_HOST_URL, challenge_id, HOST_AUTH_TOKEN)
                         if sync_status:
                             print(f"✅ Sync status retrieved: {sync_status}")
+                        
+                        # Additional debugging for sync issues
+                        print(f"\n🔍 Sync Debugging Information:")
+                        print(f"   Challenge ID: {challenge_id}")
+                        print(f"   GitHub Token: {GITHUB_AUTH_TOKEN[:8]}...{GITHUB_AUTH_TOKEN[-4:] if len(GITHUB_AUTH_TOKEN) > 12 else '***'}")
+                        print(f"   Repository: {GITHUB_REPOSITORY}")
+                        print(f"   Branch: {GITHUB_BRANCH}")
+                        
+                        # Check if challenge has GitHub fields configured
+                        print(f"\n📋 To enable EvalAI → GitHub sync, ensure your challenge has:")
+                        print(f"   • github_repository: '{GITHUB_REPOSITORY}'")
+                        print(f"   • github_branch: '{GITHUB_BRANCH}'")
+                        print(f"   • github_token: [your GitHub personal access token]")
+                        print(f"\n💡 Check these in your EvalAI challenge settings")
+                        
                 except Exception as e:
                     print(f"ℹ️  Could not retrieve sync status: {e}")
             
