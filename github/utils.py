@@ -186,63 +186,6 @@ def validate_token(response):
     return True
 
 
-def setup_github_webhook(github_token, repo_name, evalai_host_url, challenge_id=None):
-    """
-    Sets up GitHub webhook for bi-directional sync
-    
-    Arguments:
-        github_token {str}: GitHub personal access token
-        repo_name {str}: Name of the GitHub repository
-        evalai_host_url {str}: EvalAI server URL
-        challenge_id {int}: Optional challenge ID for specific webhook setup
-    
-    Returns:
-        bool: True if webhook setup was successful, False otherwise
-    """
-    try:
-        client = Github(github_token)
-        repo = client.get_user().get_repo(repo_name)
-        
-        # Webhook configuration
-        webhook_url = "{}{}".format(evalai_host_url, GITHUB_WEBHOOK_URL)
-        webhook_config = {
-            "url": webhook_url,
-            "content_type": "json",
-            "secret": "",  # No secret for MVP
-            "insecure_ssl": "0" if not is_localhost_url(evalai_host_url) else "1"
-        }
-        
-        # Events to trigger webhook
-        events = ["push"]
-        
-        # Check if webhook already exists
-        existing_webhooks = repo.get_hooks()
-        webhook_exists = any(
-            hook.config.get("url") == webhook_url for hook in existing_webhooks
-        )
-        
-        if webhook_exists:
-            print(f"✅ Webhook already exists for repository: {repo_name}")
-            return True
-        
-        # Create new webhook
-        repo.create_hook(
-            name="web",
-            config=webhook_config,
-            events=events,
-            active=True
-        )
-        
-        print(f"✅ Successfully created GitHub webhook for repository: {repo_name}")
-        print(f"   Webhook URL: {webhook_url}")
-        print(f"   Events: {', '.join(events)}")
-        return True
-        
-    except Exception as e:
-        print(f"❌ Failed to setup GitHub webhook: {e}")
-        return False
-
-
 def check_sync_status(evalai_host_url, challenge_id, host_auth_token):
     """
     Checks the sync status of a challenge with GitHub

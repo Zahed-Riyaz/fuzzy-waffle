@@ -17,14 +17,13 @@ from utils import (
     get_request_header,
     load_host_configs,
     validate_token,
-    setup_github_webhook,
     check_sync_status,
     is_localhost_url,
 )
 
 sys.dont_write_bytecode = True
 
-# GitHub token from repository secrets (used for GitHub API operations like creating issues, PR comments, and webhooks)
+# GitHub token from repository secrets (used for GitHub API operations like creating issues, PR comments)
 GITHUB_CONTEXT = json.loads(os.getenv("GITHUB_CONTEXT", "{}"))
 GITHUB_AUTH_TOKEN = os.getenv("GITHUB_AUTH_TOKEN")  # This comes from AUTH_TOKEN repository secret
 if not GITHUB_AUTH_TOKEN:
@@ -78,32 +77,25 @@ def configure_requests_for_localhost():
     print("INFO: SSL verification disabled for localhost development server")
 
 
-def setup_bi_directional_sync():
+def setup_one_way_sync():
     """
-    Sets up bi-directional sync by configuring GitHub webhook
+    Sets up one-way sync from EvalAI to GitHub
     """
-    print(f"\n🔄 Setting up bi-directional sync...")
+    print(f"\n🔄 Setting up one-way sync (EvalAI → GitHub)...")
     print(f"   Repository: {GITHUB_REPOSITORY}")
     print(f"   EvalAI Server: {EVALAI_HOST_URL}")
     print(f"   Using GitHub token: {GITHUB_AUTH_TOKEN[:8]}...{GITHUB_AUTH_TOKEN[-4:] if len(GITHUB_AUTH_TOKEN) > 12 else '***'}")
     
-    # Setup GitHub webhook for bi-directional sync
-    webhook_success = setup_github_webhook(
-        GITHUB_AUTH_TOKEN, 
-        GITHUB_REPOSITORY, 
-        EVALAI_HOST_URL
-    )
+    print("✅ One-way sync configuration completed!")
+    print("   EvalAI changes will automatically sync to GitHub")
+    print("   GitHub changes will NOT sync back to EvalAI (by design)")
+    print("\n💡 How it works:")
+    print("   1. Make changes in EvalAI UI")
+    print("   2. Changes are saved to database")
+    print("   3. Automatically triggers GitHub sync via Celery task")
+    print("   4. GitHub repository is updated with latest changes")
     
-    if webhook_success:
-        print("✅ Bi-directional sync setup completed successfully!")
-        print("   GitHub changes will now automatically sync to EvalAI")
-        print("   EvalAI changes will continue to sync to GitHub")
-        return True
-    else:
-        print("❌ Bi-directional sync setup failed. Manual webhook configuration required.")
-        print(f"   Please configure webhook manually at: {EVALAI_HOST_URL}{GITHUB_WEBHOOK_URL}")
-        print("   Or check that your GitHub token has 'repo' scope permissions")
-        return False
+    return True
 
 
 if __name__ == "__main__":
@@ -127,7 +119,7 @@ if __name__ == "__main__":
     print(f"\n🌐 EvalAI Server: {EVALAI_HOST_URL}")
     print(f"🏠 Localhost Mode: {is_localhost}")
     print(f"🤖 Self-hosted Runner: {runner_info['is_self_hosted']}")
-    print(f"🔄 Bi-directional Sync: {'Available' if GITHUB_AUTH_TOKEN else 'Not configured'}")
+    print(f"🔄 Sync Mode: One-way (EvalAI → GitHub)")
     
     if GITHUB_AUTH_TOKEN:
         print(f"   GitHub Token: {GITHUB_AUTH_TOKEN[:8]}...{GITHUB_AUTH_TOKEN[-4:] if len(GITHUB_AUTH_TOKEN) > 12 else '***'}")
@@ -140,15 +132,12 @@ if __name__ == "__main__":
         configure_requests_for_localhost()
         print(f"INFO: Using localhost server: {EVALAI_HOST_URL}")
         
-    # Setup bi-directional sync if GitHub token is available
-    if GITHUB_AUTH_TOKEN and not is_localhost:
-        setup_bi_directional_sync()
-    elif GITHUB_AUTH_TOKEN and is_localhost:
-        print("ℹ️  Bi-directional sync setup skipped for localhost development")
-        print("   Webhook setup requires a publicly accessible EvalAI server")
-    elif not GITHUB_AUTH_TOKEN:
-        print("ℹ️  Bi-directional sync not configured")
-        print("   Add AUTH_TOKEN to repository secrets to enable automatic webhook setup")
+    # Setup one-way sync configuration
+    if GITHUB_AUTH_TOKEN:
+        setup_one_way_sync()
+    else:
+        print("ℹ️  One-way sync not configured")
+        print("   Add AUTH_TOKEN to repository secrets to enable automatic GitHub sync")
         
     # Fetching the url
     if VALIDATION_STEP == "True":
@@ -180,7 +169,7 @@ if __name__ == "__main__":
         "GITHUB_BRANCH" : GITHUB_BRANCH
     }
     
-    # Add GitHub token for bi-directional sync if available
+    # Add GitHub token for one-way sync if available
     if GITHUB_AUTH_TOKEN:
         data["GITHUB_TOKEN"] = GITHUB_AUTH_TOKEN
 
