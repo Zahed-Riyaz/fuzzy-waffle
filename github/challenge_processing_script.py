@@ -125,6 +125,7 @@ if __name__ == "__main__":
     data = {
         "GITHUB_REPOSITORY": GITHUB_REPOSITORY,
         "GITHUB_AUTH_TOKEN": GITHUB_AUTH_TOKEN,
+        "GITHUB_BRANCH" : GITHUB_BRANCH
     }
 
     # Configure SSL verification based on whether we're using localhost
