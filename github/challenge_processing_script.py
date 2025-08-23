@@ -268,6 +268,7 @@ def setup_one_way_sync():
         print(f"   • github_token: [your GitHub personal access token]")
         print(f"\n💡 These must be set in the EvalAI challenge settings for sync to work")
         print(f"💡 Note: Your repository uses '{GITHUB_BRANCH}' branch, not 'main'")
+
         
         return True
     else:
