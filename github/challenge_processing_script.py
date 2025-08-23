@@ -17,12 +17,16 @@ from utils import (
     get_request_header,
     load_host_configs,
     validate_token,
+    setup_github_webhook,
+    check_sync_status,
+    is_localhost_url,
 )
 
 sys.dont_write_bytecode = True
 
+# GitHub token from repository secrets (used for GitHub API operations like creating issues, PR comments, and webhooks)
 GITHUB_CONTEXT = json.loads(os.getenv("GITHUB_CONTEXT", "{}"))
-GITHUB_AUTH_TOKEN = os.getenv("GITHUB_AUTH_TOKEN")
+GITHUB_AUTH_TOKEN = os.getenv("GITHUB_AUTH_TOKEN")  # This comes from AUTH_TOKEN repository secret
 if not GITHUB_AUTH_TOKEN:
     print(
         "Please add your github access token to the repository secrets with the name AUTH_TOKEN"
@@ -31,9 +35,11 @@ if not GITHUB_AUTH_TOKEN:
 
 # Clean up the GitHub token (remove any whitespace/newlines)
 GITHUB_AUTH_TOKEN = GITHUB_AUTH_TOKEN.strip()
-HOST_AUTH_TOKEN = None
-CHALLENGE_HOST_TEAM_PK = None
-EVALAI_HOST_URL = None
+
+# EvalAI configuration
+HOST_AUTH_TOKEN = None      # EvalAI user authentication token
+CHALLENGE_HOST_TEAM_PK = None  # EvalAI team ID
+EVALAI_HOST_URL = None      # EvalAI server URL
 
 
 def is_localhost_url(url):
@@ -72,6 +78,34 @@ def configure_requests_for_localhost():
     print("INFO: SSL verification disabled for localhost development server")
 
 
+def setup_bi_directional_sync():
+    """
+    Sets up bi-directional sync by configuring GitHub webhook
+    """
+    print(f"\n🔄 Setting up bi-directional sync...")
+    print(f"   Repository: {GITHUB_REPOSITORY}")
+    print(f"   EvalAI Server: {EVALAI_HOST_URL}")
+    print(f"   Using GitHub token: {GITHUB_AUTH_TOKEN[:8]}...{GITHUB_AUTH_TOKEN[-4:] if len(GITHUB_AUTH_TOKEN) > 12 else '***'}")
+    
+    # Setup GitHub webhook for bi-directional sync
+    webhook_success = setup_github_webhook(
+        GITHUB_AUTH_TOKEN, 
+        GITHUB_REPOSITORY, 
+        EVALAI_HOST_URL
+    )
+    
+    if webhook_success:
+        print("✅ Bi-directional sync setup completed successfully!")
+        print("   GitHub changes will now automatically sync to EvalAI")
+        print("   EvalAI changes will continue to sync to GitHub")
+        return True
+    else:
+        print("❌ Bi-directional sync setup failed. Manual webhook configuration required.")
+        print(f"   Please configure webhook manually at: {EVALAI_HOST_URL}{GITHUB_WEBHOOK_URL}")
+        print("   Or check that your GitHub token has 'repo' scope permissions")
+        return False
+
+
 if __name__ == "__main__":
     if GITHUB_CONTEXT["event"]["head_commit"]["message"].startswith("evalai_bot"):
         print("Sync from Evalai")
@@ -93,10 +127,28 @@ if __name__ == "__main__":
     print(f"\n🌐 EvalAI Server: {EVALAI_HOST_URL}")
     print(f"🏠 Localhost Mode: {is_localhost}")
     print(f"🤖 Self-hosted Runner: {runner_info['is_self_hosted']}")
+    print(f"🔄 Bi-directional Sync: {'Available' if GITHUB_AUTH_TOKEN else 'Not configured'}")
+    
+    if GITHUB_AUTH_TOKEN:
+        print(f"   GitHub Token: {GITHUB_AUTH_TOKEN[:8]}...{GITHUB_AUTH_TOKEN[-4:] if len(GITHUB_AUTH_TOKEN) > 12 else '***'}")
+        print(f"   Token Source: AUTH_TOKEN repository secret")
+    else:
+        print(f"   GitHub Token: Not provided")
+        print(f"   To enable: Add AUTH_TOKEN to repository secrets")
     
     if is_localhost:
         configure_requests_for_localhost()
         print(f"INFO: Using localhost server: {EVALAI_HOST_URL}")
+        
+    # Setup bi-directional sync if GitHub token is available
+    if GITHUB_AUTH_TOKEN and not is_localhost:
+        setup_bi_directional_sync()
+    elif GITHUB_AUTH_TOKEN and is_localhost:
+        print("ℹ️  Bi-directional sync setup skipped for localhost development")
+        print("   Webhook setup requires a publicly accessible EvalAI server")
+    elif not GITHUB_AUTH_TOKEN:
+        print("ℹ️  Bi-directional sync not configured")
+        print("   Add AUTH_TOKEN to repository secrets to enable automatic webhook setup")
         
     # Fetching the url
     if VALIDATION_STEP == "True":
@@ -126,6 +178,10 @@ if __name__ == "__main__":
         "GITHUB_REPOSITORY": GITHUB_REPOSITORY,
         "GITHUB_AUTH_TOKEN": GITHUB_AUTH_TOKEN,
     }
+    
+    # Add GitHub token for bi-directional sync if available
+    if GITHUB_AUTH_TOKEN:
+        data["GITHUB_TOKEN"] = GITHUB_AUTH_TOKEN
 
     # Configure SSL verification based on whether we're using localhost
     verify_ssl = not is_localhost
@@ -139,6 +195,19 @@ if __name__ == "__main__":
             response.raise_for_status()
         else:
             print("\n✅ Challenge processed successfully on EvalAI")
+            
+            # If this was a challenge creation/update, try to get the challenge ID for sync status
+            if VALIDATION_STEP != "True" and GITHUB_AUTH_TOKEN:
+                try:
+                    response_data = response.json()
+                    if "id" in response_data:
+                        challenge_id = response_data["id"]
+                        print(f"\n🔄 Checking sync status for challenge {challenge_id}...")
+                        sync_status = check_sync_status(EVALAI_HOST_URL, challenge_id, HOST_AUTH_TOKEN)
+                        if sync_status:
+                            print(f"✅ Sync status retrieved: {sync_status}")
+                except Exception as e:
+                    print(f"ℹ️  Could not retrieve sync status: {e}")
             
     except requests.exceptions.ConnectionError as conn_err:
         # Handle connection errors specifically for localhost
