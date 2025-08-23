@@ -387,10 +387,61 @@ if __name__ == "__main__":
                 endpoint_results = test_api_endpoints(EVALAI_HOST_URL, CHALLENGE_HOST_TEAM_PK, HOST_AUTH_TOKEN)
                 
                 if any(r.get("accessible", False) for r in endpoint_results.values()):
-                    print(f"\n✅ Found working endpoints! Update your config.py with one of these patterns:")
-                    for pattern, result in endpoint_results.items():
-                        if result.get("accessible", False):
-                            print(f"   • {pattern}")
+                    print(f"\n✅ Found working endpoints! Retrying with working pattern...")
+                    working_endpoints = [p for p, r in endpoint_results.items() if r.get("accessible", False)]
+                    
+                    # Try the first working endpoint
+                    working_endpoint = working_endpoints[0]
+                    print(f"   🚀 Retrying with: {working_endpoint}")
+                    
+                    # Update the URL and retry the request
+                    new_url = f"{EVALAI_HOST_URL}{working_endpoint}"
+                    print(f"   📡 New API Endpoint: {new_url}")
+                    
+                    try:
+                        print(f"\n🔄 Retrying request with working endpoint...")
+                        response = requests.post(new_url, data=data, headers=headers, files=file, verify=verify_ssl)
+                        
+                        if response.status_code in [200, 201, 202]:
+                            print("\n✅ Challenge processed successfully on EvalAI with working endpoint!")
+                            
+                            # If this was a challenge creation/update, try to get the challenge ID for sync status
+                            if VALIDATION_STEP != "True" and GITHUB_AUTH_TOKEN:
+                                try:
+                                    response_data = response.json()
+                                    if "id" in response_data:
+                                        challenge_id = response_data["id"]
+                                        print(f"\n🔄 Checking sync status for challenge {challenge_id}...")
+                                        sync_status = check_sync_status(EVALAI_HOST_URL, challenge_id, HOST_AUTH_TOKEN)
+                                        if sync_status:
+                                            print(f"✅ Sync status retrieved: {sync_status}")
+                                except Exception as e:
+                                    print(f"ℹ️  Could not retrieve sync status: {e}")
+                            
+                            # Success - clear errors and continue
+                            os.environ["CHALLENGE_ERRORS"] = "False"
+                            print(f"\n🎉 Successfully processed challenge with working endpoint!")
+                            print(f"💡 Update your config.py with this working pattern:")
+                            print(f"   CHALLENGE_CONFIG_VALIDATION_URL = \"{working_endpoint}\"")
+                            print(f"   CHALLENGE_CREATE_OR_UPDATE_URL = \"{working_endpoint.replace('validate_challenge_config', 'create_or_update_github_challenge')}\"")
+                            
+                            # Continue with success flow
+                            zip_file.close()
+                            os.remove(zip_file.name)
+                            print("\nExiting the {} script after success\n".format(os.path.basename(__file__)))
+                            sys.exit(0)
+                            
+                        else:
+                            print(f"\n❌ Retry failed with status: {response.status_code}")
+                            print(f"   Response: {response.text}")
+                            
+                    except Exception as retry_err:
+                        print(f"\n❌ Retry failed with error: {retry_err}")
+                    
+                    print(f"\n💡 Update your config.py with this working pattern:")
+                    print(f"   CHALLENGE_CONFIG_VALIDATION_URL = \"{working_endpoint}\"")
+                    print(f"   CHALLENGE_CREATE_OR_UPDATE_URL = \"{working_endpoint.replace('validate_challenge_config', 'create_or_update_github_challenge')}\"")
+                    
                 else:
                     print(f"\n❌ No working endpoints found. Please check:")
                     print(f"   • Team PK is correct: {CHALLENGE_HOST_TEAM_PK}")
