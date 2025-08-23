@@ -21,15 +21,6 @@ from utils import (
     is_localhost_url,
 )
 
-# Debug: Check what variables were imported from config
-print(f"DEBUG: After config import:")
-print(f"  GITHUB_REPOSITORY = {GITHUB_REPOSITORY}")
-print(f"  GITHUB_BRANCH = {GITHUB_BRANCH}")
-print(f"  GITHUB_EVENT_NAME = {GITHUB_EVENT_NAME}")
-print(f"  VALIDATION_STEP = {VALIDATION_STEP}")
-print(f"  CHALLENGE_CONFIG_VALIDATION_URL = {CHALLENGE_CONFIG_VALIDATION_URL}")
-print(f"  CHALLENGE_CREATE_OR_UPDATE_URL = {CHALLENGE_CREATE_OR_UPDATE_URL}")
-
 sys.dont_write_bytecode = True
 
 # GitHub token from repository secrets (used for GitHub API operations like creating issues, PR comments)
@@ -52,7 +43,6 @@ EVALAI_HOST_URL = None      # EvalAI server URL
 # Fallback for GITHUB_BRANCH if not imported from config
 if 'GITHUB_BRANCH' not in globals():
     GITHUB_BRANCH = os.getenv("GITHUB_REF_NAME") or os.getenv("GITHUB_BRANCH") or os.getenv("GITHUB_REF", "refs/heads/main").replace("refs/heads/", "") or "main"
-    print(f"DEBUG: GITHUB_BRANCH fallback defined: {GITHUB_BRANCH}")
 
 
 def is_localhost_url(url):
