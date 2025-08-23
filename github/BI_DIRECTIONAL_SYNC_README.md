@@ -1,22 +1,25 @@
-# Bi-directional Sync with EvalAI
+# One-Way Sync: EvalAI → GitHub
 
-This repository now supports **bi-directional synchronization** between GitHub and EvalAI using the existing `AUTH_TOKEN` repository secret.
+This repository now supports **one-way synchronization** from EvalAI UI to GitHub repositories using the existing `AUTH_TOKEN` repository secret.
 
 ## How It Works
 
-### **Before (One-way sync):**
-- ✅ EvalAI → GitHub: Automatic (when you update challenges in EvalAI)
-- ❌ GitHub → EvalAI: Manual (you had to manually trigger sync)
+### **Sync Direction: EvalAI → GitHub (One-way)**
+- ✅ **EvalAI → GitHub**: Automatic (when you update challenges in EvalAI UI)
+- ❌ **GitHub → EvalAI**: Not supported (by design)
 
-### **After (Bi-directional sync):**
-- ✅ EvalAI → GitHub: Automatic (when you update challenges in EvalAI)
-- ✅ GitHub → EvalAI: Automatic (when you push changes to GitHub)
+### **The Flow:**
+1. **User makes changes in EvalAI UI** (title, description, evaluation details, etc.)
+2. **Changes are saved to EvalAI database**
+3. **Automatically triggers GitHub sync** via Celery task
+4. **GitHub repository is updated** with latest changes
+5. **Version control**: Every change is tracked in Git history
 
 ## Setup Requirements
 
 ### **1. Repository Secret (Already configured)**
 - `AUTH_TOKEN`: Your GitHub personal access token
-- **Scope**: Must have `repo` permissions to manage webhooks
+- **Scope**: Must have `repo` permissions to push to GitHub
 - **Location**: Repository Settings → Secrets and variables → Actions
 
 ### **2. Host Configuration**
@@ -28,94 +31,117 @@ This repository now supports **bi-directional synchronization** between GitHub a
 }
 ```
 
-## How the Sync Works
+### **3. Challenge Configuration in EvalAI**
+Challenge hosts configure these fields in EvalAI:
+- `github_repository`: "org/repo-name"
+- `github_branch`: "main" (or custom branch)
+- `github_token`: Personal access token
 
-### **GitHub → EvalAI (Automatic via Webhook)**
-1. You push changes to GitHub repository
-2. GitHub automatically sends a webhook to EvalAI
-3. EvalAI receives the webhook and identifies affected challenges
-4. EvalAI pulls the updated `challenge_config.yaml` from GitHub
-5. Challenge is updated in EvalAI database
-6. `last_github_sync` timestamp is updated
+## Benefits of One-Way Sync
 
-### **EvalAI → GitHub (Existing functionality)**
-1. You update a challenge in EvalAI
-2. EvalAI automatically pushes changes to GitHub repository
-3. GitHub repository is updated with new challenge configuration
+### **✅ Simple & Reliable**
+- **No complex webhooks** to manage
+- **No conflict resolution** needed
+- **Predictable behavior** - changes only flow one direction
 
-## Webhook Configuration
+### **✅ Automatic & Seamless**
+- **No manual sync** required
+- **Real-time updates** to GitHub
+- **Version control** for all changes
 
-The script automatically sets up the required GitHub webhook:
-
-- **URL**: `https://your-evalai-domain.com/api/v1/challenges/github/webhook/`
-- **Events**: `push` events only
-- **Content Type**: `application/json`
-- **Secret**: None (for MVP simplicity)
+### **✅ Production Ready**
+- **Uses existing** GitHub interface
+- **Celery task-based** for reliability
+- **Error handling** and retry logic
 
 ## What Gets Synced
 
-### **From GitHub to EvalAI:**
-- `title`
-- `description`
-- `evaluation_details`
-- Basic challenge metadata
-
 ### **From EvalAI to GitHub:**
+- `title` - Challenge title
+- `description` - Challenge description
+- `evaluation_details` - Evaluation criteria
 - All challenge configuration files
 - Evaluation scripts
 - Challenge metadata
+
+### **Sync Triggers:**
+- Challenge creation
+- Challenge updates
+- Challenge phase updates
+- Any field modification in EvalAI UI
 
 ## Usage
 
 ### **Automatic Setup**
 When you run the challenge processing script:
 1. It automatically detects your `AUTH_TOKEN`
-2. Sets up the GitHub webhook for bi-directional sync
-3. Configures the sync endpoints
+2. Configures one-way sync from EvalAI to GitHub
+3. Sets up the sync endpoints
 
-### **Manual Webhook Setup (if automatic fails)**
-If automatic webhook setup fails:
-1. Go to your GitHub repository
-2. Settings → Webhooks → Add webhook
-3. **Payload URL**: `https://your-evalai-domain.com/api/v1/challenges/github/webhook/`
-4. **Content type**: `application/json`
-5. **Events**: Select "Just the push event"
-6. **Active**: ✓
+### **Manual Configuration in EvalAI**
+1. **Create/Edit Challenge** in EvalAI UI
+2. **Set GitHub fields:**
+   - Repository: `your-org/your-repo`
+   - Branch: `main` (or your preferred branch)
+   - Token: Your GitHub personal access token
+3. **Save changes** - sync happens automatically
+
+## Localhost Development
+
+### **Works the Same Way**
+- **No special configuration** needed for localhost
+- **Uses same sync mechanism** as production
+- **Perfect for development and testing**
+
+### **Setup for Local Development**
+```bash
+# 1. Start your local EvalAI server
+python manage.py runserver 0.0.0.0:8000
+
+# 2. Configure challenge with GitHub details in EvalAI UI
+# 3. Make changes - they'll sync to GitHub automatically
+```
 
 ## Troubleshooting
 
-### **Webhook Setup Fails**
-- Ensure your `AUTH_TOKEN` has `repo` scope permissions
-- Check that your EvalAI server is publicly accessible
-- Verify the webhook URL is correct
-
 ### **Sync Not Working**
-- Check webhook delivery status in GitHub repository settings
-- Verify EvalAI server logs for webhook reception
-- Ensure `challenge_config.yaml` is in the repository root
+- Check that `github_repository` is set correctly in EvalAI
+- Verify `github_branch` exists in your repository
+- Ensure `github_token` has `repo` scope permissions
+- Check EvalAI logs for sync task errors
 
-### **Localhost Development**
-- Bi-directional sync is skipped for localhost servers
-- Webhooks require publicly accessible endpoints
-- Use self-hosted runners for local development
+### **Permission Issues**
+- Ensure your GitHub token has `repo` scope
+- Check repository access permissions
+- Verify branch protection rules allow pushes
 
-## Benefits
+### **Common Error Messages**
+- **"Repository not found"**: Check `github_repository` field
+- **"Branch not found"**: Verify `github_branch` exists
+- **"Permission denied"**: Check token scope and repository access
 
-1. **Real-time Updates**: Changes propagate automatically in both directions
-2. **No Manual Intervention**: Set it up once, works automatically
-3. **Consistent State**: GitHub and EvalAI stay in sync
-4. **Simple Configuration**: Uses existing `AUTH_TOKEN` secret
+## Why One-Way Sync?
 
-## Security Notes
+### **Design Decision**
+- **Simpler architecture** - easier to maintain and debug
+- **No webhook complexity** - more reliable
+- **Clear data flow** - EvalAI is the source of truth
+- **Version control** - all changes tracked in Git
 
-- **MVP Implementation**: No webhook signature verification
-- **Production Ready**: Can be enhanced with signature verification later
-- **Token Permissions**: `AUTH_TOKEN` needs `repo` scope for webhook management
+### **Use Cases**
+- **Challenge management** - hosts update challenges in EvalAI
+- **Version tracking** - all changes automatically committed to Git
+- **Collaboration** - team members can see changes in GitHub
+- **Backup** - GitHub serves as backup of EvalAI data
 
 ## Future Enhancements
 
-- Webhook signature verification
-- Conflict detection and resolution
-- Sync status dashboard
-- Advanced merge strategies
-- Audit logging
+While this is a one-way sync, future versions could add:
+- **Conflict detection** for manual merge scenarios
+- **Sync status dashboard** in EvalAI UI
+- **Advanced merge strategies** for specific fields
+- **Audit logging** of all sync operations
+
+## Summary
+
+This implementation provides a **simple, reliable, and automatic** way to keep GitHub repositories in sync with EvalAI challenge data. By focusing on one direction, we eliminate complexity while providing immediate value to challenge hosts who want version control and backup of their challenge configurations.

@@ -241,6 +241,29 @@ if __name__ == "__main__":
                 )
                 print(error_message)
                 os.environ["CHALLENGE_ERRORS"] = error_message
+        elif response.status_code == 404:
+            print(f"\n❌ 404 Not Found Error")
+            print(f"   The API endpoint was not found: {url}")
+            print(f"   This usually means the URL structure has changed in the backend.")
+            print(f"\n🔍 Debugging Information:")
+            print(f"   Team PK: {CHALLENGE_HOST_TEAM_PK}")
+            print(f"   EvalAI Host: {EVALAI_HOST_URL}")
+            print(f"   Full URL: {url}")
+            print(f"\n💡 Possible Solutions:")
+            print(f"   1. Check if the team_pk ({CHALLENGE_HOST_TEAM_PK}) is correct")
+            print(f"   2. Verify the EvalAI server is running and accessible")
+            print(f"   3. Check if the API endpoint structure has changed")
+            print(f"   4. Try accessing the EvalAI admin interface to verify team ID")
+            
+            # Try to suggest alternative endpoint patterns
+            print(f"\n🔧 Alternative endpoint patterns to try:")
+            print(f"   • /api/v1/challenges/challenge_host_team/{CHALLENGE_HOST_TEAM_PK}/validate_challenge_config/")
+            print(f"   • /api/challenges/challenge_host_team/{CHALLENGE_HOST_TEAM_PK}/validate_challenge_config/")
+            print(f"   • /api/v1/challenges/{CHALLENGE_HOST_TEAM_PK}/validate_challenge_config/")
+            print(f"   • /api/challenges/{CHALLENGE_HOST_TEAM_PK}/validate_challenge_config/")
+            
+            error_message = f"\n404 Not Found: API endpoint not found at {url}"
+            os.environ["CHALLENGE_ERRORS"] = error_message
         else:
             print(
                 "\nFollowing errors occurred while validating the challenge config: {}".format(
