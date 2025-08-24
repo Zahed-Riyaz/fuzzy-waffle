@@ -259,8 +259,9 @@ def setup_one_way_sync():
         print("\n💡 How it works:")
         print("   1. Make changes in EvalAI UI")
         print("   2. Changes are saved to database")
-        print("   3. Automatically triggers GitHub sync via Celery task")
+        print("   3. Django signal automatically triggers GitHub sync")
         print("   4. GitHub repository is updated with latest changes")
+        print("   5. User gets immediate feedback (no waiting)")
         
         print(f"\n⚠️  IMPORTANT: Ensure your EvalAI challenge has these fields configured:")
         print(f"   • github_repository: '{GITHUB_REPOSITORY}'")
@@ -268,6 +269,9 @@ def setup_one_way_sync():
         print(f"   • github_token: [your GitHub personal access token]")
         print(f"\n💡 These must be set in the EvalAI challenge settings for sync to work")
         print(f"💡 Note: Your repository uses '{GITHUB_BRANCH}' branch, not 'main'")
+        print(f"\n🔧 Backend uses Django signals for automatic sync (no Celery needed)")
+        print(f"   • challenge_details_sync signal for challenge updates")
+        print(f"   • challenge_phase_details_sync signal for phase updates")
         
         return True
     else:
@@ -389,6 +393,18 @@ if __name__ == "__main__":
                         print(f"   • github_branch: '{GITHUB_BRANCH}'")
                         print(f"   • github_token: [your GitHub personal access token]")
                         print(f"\n💡 Check these in your EvalAI challenge settings")
+                        
+                        print(f"\n🔧 Django Signal Sync Architecture:")
+                        print(f"   • challenge_details_sync signal triggers on Challenge updates")
+                        print(f"   • challenge_phase_details_sync signal triggers on Phase updates")
+                        print(f"   • No Celery/background tasks needed")
+                        print(f"   • Sync happens immediately in same request")
+                        
+                        print(f"\n🐛 If sync isn't working, check:")
+                        print(f"   • EvalAI logs for signal execution")
+                        print(f"   • Signal handlers are properly registered")
+                        print(f"   • GitHub fields are saved in challenge model")
+                        print(f"   • No errors in github_utils.py functions")
                         
                 except Exception as e:
                     print(f"ℹ️  Could not retrieve sync status: {e}")

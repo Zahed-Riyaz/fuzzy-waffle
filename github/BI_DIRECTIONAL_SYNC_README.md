@@ -1,19 +1,36 @@
-# One-Way Sync: EvalAI → GitHub
+# One-Way Sync: EvalAI → GitHub (Django Signals)
 
-This repository now supports **one-way synchronization** from EvalAI UI to GitHub repositories using the existing `AUTH_TOKEN` repository secret.
+This repository now supports **one-way synchronization** from EvalAI UI to GitHub repositories using **Django signals** for automatic triggering.
 
 ## How It Works
 
 ### **Sync Direction: EvalAI → GitHub (One-way)**
-- ✅ **EvalAI → GitHub**: Automatic (when you update challenges in EvalAI UI)
+- ✅ **EvalAI → GitHub**: Automatic via Django signals (when you update challenges in EvalAI UI)
 - ❌ **GitHub → EvalAI**: Not supported (by design)
 
 ### **The Flow:**
 1. **User makes changes in EvalAI UI** (title, description, evaluation details, etc.)
 2. **Changes are saved to EvalAI database**
-3. **Automatically triggers GitHub sync** via Celery task
+3. **Django signal automatically triggers** GitHub sync function
 4. **GitHub repository is updated** with latest changes
-5. **Version control**: Every change is tracked in Git history
+5. **User gets immediate feedback** (no waiting for background tasks)
+
+## Architecture Benefits
+
+### **✅ No External Dependencies**
+- **No Celery/Redis** required
+- **Uses Django's built-in signal system**
+- **Lightweight and reliable**
+
+### **✅ Immediate User Experience**
+- **Sync happens in same request**
+- **User sees results immediately**
+- **No background task complexity**
+
+### **✅ Automatic Triggering**
+- **Django signals handle everything**
+- **No manual sync calls needed**
+- **Reliable and consistent**
 
 ## Setup Requirements
 
@@ -34,25 +51,8 @@ This repository now supports **one-way synchronization** from EvalAI UI to GitHu
 ### **3. Challenge Configuration in EvalAI**
 Challenge hosts configure these fields in EvalAI:
 - `github_repository`: "org/repo-name"
-- `github_branch`: "main" (or custom branch)
+- `github_branch`: "challenge" (or your preferred branch)
 - `github_token`: Personal access token
-
-## Benefits of One-Way Sync
-
-### **✅ Simple & Reliable**
-- **No complex webhooks** to manage
-- **No conflict resolution** needed
-- **Predictable behavior** - changes only flow one direction
-
-### **✅ Automatic & Seamless**
-- **No manual sync** required
-- **Real-time updates** to GitHub
-- **Version control** for all changes
-
-### **✅ Production Ready**
-- **Uses existing** GitHub interface
-- **Celery task-based** for reliability
-- **Error handling** and retry logic
 
 ## What Gets Synced
 
@@ -64,11 +64,10 @@ Challenge hosts configure these fields in EvalAI:
 - Evaluation scripts
 - Challenge metadata
 
-### **Sync Triggers:**
-- Challenge creation
-- Challenge updates
-- Challenge phase updates
-- Any field modification in EvalAI UI
+### **Sync Triggers (Django Signals):**
+- **Challenge updates** - `challenge_details_sync` signal
+- **Challenge phase updates** - `challenge_phase_details_sync` signal
+- **Any field modification** in EvalAI UI
 
 ## Usage
 
@@ -82,15 +81,15 @@ When you run the challenge processing script:
 1. **Create/Edit Challenge** in EvalAI UI
 2. **Set GitHub fields:**
    - Repository: `your-org/your-repo`
-   - Branch: `main` (or your preferred branch)
+   - Branch: `challenge` (or your preferred branch)
    - Token: Your GitHub personal access token
-3. **Save changes** - sync happens automatically
+3. **Save changes** - sync happens automatically via Django signals
 
 ## Localhost Development
 
 ### **Works the Same Way**
 - **No special configuration** needed for localhost
-- **Uses same sync mechanism** as production
+- **Uses same Django signal mechanism** as production
 - **Perfect for development and testing**
 
 ### **Setup for Local Development**
@@ -99,7 +98,7 @@ When you run the challenge processing script:
 python manage.py runserver 0.0.0.0:8000
 
 # 2. Configure challenge with GitHub details in EvalAI UI
-# 3. Make changes - they'll sync to GitHub automatically
+# 3. Make changes - they'll sync to GitHub automatically via Django signals
 ```
 
 ## Troubleshooting
@@ -108,7 +107,8 @@ python manage.py runserver 0.0.0.0:8000
 - Check that `github_repository` is set correctly in EvalAI
 - Verify `github_branch` exists in your repository
 - Ensure `github_token` has `repo` scope permissions
-- Check EvalAI logs for sync task errors
+- Check EvalAI logs for Django signal execution
+- Verify the signal handlers are properly registered
 
 ### **Permission Issues**
 - Ensure your GitHub token has `repo` scope
@@ -119,14 +119,16 @@ python manage.py runserver 0.0.0.0:8000
 - **"Repository not found"**: Check `github_repository` field
 - **"Branch not found"**: Verify `github_branch` exists
 - **"Permission denied"**: Check token scope and repository access
+- **"Signal not triggered"**: Check Django signal registration
 
-## Why One-Way Sync?
+## Why Django Signals?
 
 ### **Design Decision**
-- **Simpler architecture** - easier to maintain and debug
-- **No webhook complexity** - more reliable
-- **Clear data flow** - EvalAI is the source of truth
-- **Version control** - all changes tracked in Git
+- **Simpler architecture** - no external task queues
+- **Built into Django** - reliable and well-tested
+- **Immediate feedback** - user sees sync results right away
+- **Easy to debug** - no background task complexity
+- **No additional infrastructure** - just Django + your sync logic
 
 ### **Use Cases**
 - **Challenge management** - hosts update challenges in EvalAI
@@ -136,7 +138,7 @@ python manage.py runserver 0.0.0.0:8000
 
 ## Future Enhancements
 
-While this is a one-way sync, future versions could add:
+While this uses Django signals, future versions could add:
 - **Conflict detection** for manual merge scenarios
 - **Sync status dashboard** in EvalAI UI
 - **Advanced merge strategies** for specific fields
@@ -144,4 +146,4 @@ While this is a one-way sync, future versions could add:
 
 ## Summary
 
-This implementation provides a **simple, reliable, and automatic** way to keep GitHub repositories in sync with EvalAI challenge data. By focusing on one direction, we eliminate complexity while providing immediate value to challenge hosts who want version control and backup of their challenge configurations.
+This implementation provides a **simple, reliable, and automatic** way to keep GitHub repositories in sync with EvalAI challenge data using Django's built-in signal system. By leveraging Django signals instead of external task queues, we eliminate complexity while providing immediate value to challenge hosts who want version control and backup of their challenge configurations.
