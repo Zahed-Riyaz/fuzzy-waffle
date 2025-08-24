@@ -34,7 +34,7 @@ leaderboard_description: Lorem ipsum dolor sit amet, consectetur adipiscing elit
 published: true
 remote_evaluation: false
 short_description: Random number generation challenge for each submission
-start_date: 2019-01-01 00:00:00+00:00
+start_date: 2019-02-07 01:20:00+00:00
 submission_guidelines: <p>Submit any blank file here to see a random number generated
   for your submission. If you get lucky, you might reach the top of the leaderboard.</p>
 terms_and_conditions: <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit,
