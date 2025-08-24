@@ -1,6 +1,6 @@
 # If you are not sure what all these fields mean, please refer our documentation here:
 # https://evalai.readthedocs.io/en/latest/configuration.html
-title: Random Number Generator Challenge
+title: Test Challenge #1
 short_description: Random number generation challenge for each submission
 description: templates/description.html
 evaluation_details: templates/evaluation_details.html
@@ -162,3 +162,4 @@ challenge_phase_splits:
     is_leaderboard_order_descending: True
     show_execution_time: True
     show_leaderboard_by_latest_submission: True
+
