@@ -1,260 +1,71 @@
-challenge_phase_splits:
-- challenge_phase_id: 1
-  dataset_split_id: 1
-  is_leaderboard_order_descending: true
-  leaderboard_decimal_precision: 2
-  leaderboard_id: 1
-  show_execution_time: true
-  show_leaderboard_by_latest_submission: true
-  visibility: 1
-- challenge_phase_id: 2
-  dataset_split_id: 1
-  is_leaderboard_order_descending: true
-  leaderboard_decimal_precision: 2
-  leaderboard_id: 1
-  show_leaderboard_by_latest_submission: false
-  showeceution_time: false
-  visibility: 3
-- challenge_phase_id: 2
-  dataset_split_id: 2
-  is_leaderboard_order_descending: true
-  leaderboard_decimal_precision: 2
-  leaderboard_id: 1
-  show_execution_time: true
-  show_leaderboard_by_latest_submission: true
-  visibility: 1
-challenge_phases:
-- allowed_email_ids: []
-  allowed_submission_file_types: .json, .zip, .txt, .tsv, .gz, .csv, .h5, .npy, .npz
-  challenge: 1
-  codename: dev
-  default_submission_meta_attributes:
-  - is_visible: true
-    name: method_name
-  - is_visible: true
-    name: method_description
-  - is_visible: true
-    name: project_url
-  - is_visible: true
-    name: publication_url
-  description: templates/challenge_phase_1_description.html
-  disable_logs: false
-  end_date: 2099-04-25 23:59:59
-  id: 1
-  is_active: true
-  is_partial_submission_evaluation_enabled: false
-  is_public: true
-  is_restricted_to_select_one_submission: false
-  is_submission_public: true
-  leaderboard_public: false
-  max_concurrent_submissions_allowed: 3
-  max_submissions: 50
-  max_submissions_per_day: 5
-  max_submissions_per_month: 50
-  name: Dev Phase
-  start_date: 2019-01-19 00:00:00
-  submission_meta_attributes:
-  - description: Sample
-    name: TextAttribute
-    required: false
-    type: text
-  - description: Sample
-    name: SingleOptionAttribute
-    options:
-    - A
-    - B
-    - C
-    type: radio
-  - description: Sample
-    name: MultipleChoiceAttribute
-    options:
-    - alpha
-    - beta
-    - gamma
-    type: checkbox
-  - description: Sample
-    name: TrueFalseField
-    required: true
-    type: boolean
-  test_annotation_file: annotations/test_annotations_devsplit.json
-- allowed_email_ids: []
-  challenge: 2
-  codename: test
-  default_submission_meta_attributes:
-  - is_visible: true
-    name: method_name
-  - is_visible: true
-    name: method_description
-  - is_visible: true
-    name: project_url
-  - is_visible: true
-    name: publication_url
-  description: templates/challenge_phase_2_description.html
-  disable_logs: false
-  end_date: 2099-05-24 23:59:59
-  id: 2
-  is_active: true
-  is_partial_submission_evaluation_enabled: false
-  is_public: true
-  is_restricted_to_select_one_submission: false
-  is_submission_public: true
-  leaderboard_public: true
-  max_concurrent_submissions_allowed: 3
-  max_submissions: 50
-  max_submissions_per_day: 5
-  max_submissions_per_month: 50
-  name: Test Phase
-  start_date: 2019-01-01 00:00:00
-  submission_meta_attributes:
-  - description: Sample
-    name: TextAttribute
-    type: text
-  - description: Sample
-    name: SingleOptionAttribute
-    options:
-    - A
-    - B
-    - C
-    type: radio
-  - description: Sample
-    name: MultipleChoiceAttribute
-    options:
-    - alpha
-    - beta
-    - gamma
-    type: checkbox
-  - description: Sample
-    name: TrueFalseField
-    type: boolean
-  test_annotation_file: annotations/test_annotations_testsplit.json
-dataset_splits:
-- codename: train_split
-  id: 1
-  name: Train Split
-- codename: test_split
-  id: 2
-  name: Test Split
-description: "<p>\"Sed ut perspiciatis unde omnis iste natus error sit voluptatem\
-  \ accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo\
-  \ inventore veritatis et quasi architecto beatae vitae dicta sunt explicabo. Nemo\
-  \ enim ipsam voluptatem quia voluptas sit aspernatur aut odit aut fugit, sed quia\
-  \ consequuntur magni dolores eos qui ratione voluptatem sequi nesciunt. Neque porro\
-  \ quisquam est, qui dolorem ipsum quia dolor sit amet, consectetur, adipisci velit,\
-  \ sed quia non numquam eius modi tempora incidunt ut labore et dolore magnam aliquam\
-  \ quaerat voluptatem. Ut enim ad minima veniam, quis nostrum exercitationem ullam\
-  \ corporis suscipit laboriosam, nisi ut aliquid ex ea commodi consequatur? Quis\
-  \ autem vel eum iure reprehenderit qui in ea voluptate velit esse quam nihil molestiae\
-  \ consequatur, vel illum qui dolorem eum fugiat quo voluptas nulla pariatur?\"</p>\r\
-  \n\r\n<p>\"Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium\
-  \ doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore veritatis\
-  \ et quasi architecto beatae vitae dicta sunt explicabo. Nemo enim ipsam voluptatem\
-  \ quia voluptas sit aspernatur aut odit aut fugit, sed quia consequuntur magni dolores\
-  \ eos qui ratione voluptatem sequi nesciunt. Neque porro quisquam est, qui dolorem\
-  \ ipsum quia dolor sit amet, consectetur, adipisci velit, sed quia non numquam eius\
-  \ modi tempora incidunt ut labore et dolore magnam aliquam quaerat voluptatem. Ut\
-  \ enim ad minima veniam, quis nostrum exercitationem ullam corporis suscipit laboriosam,\
-  \ nisi ut aliquid ex ea commodi consequatur? Quis autem vel eum iure reprehenderit\
-  \ qui in ea voluptate velit esse quam nihil molestiae consequatur, vel illum qui\
-  \ dolorem eum fugiat quo voluptas nulla pariatur?\"</p>"
-end_date: '2099-05-31 23:59:59'
-evaluation_details: <p>"Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed
-  do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim
-  veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo
-  consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum
-  dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident,
-  sunt in culpa qui officia deserunt mollit anim id est laborum."</p>
-evaluation_script: !!python/object:django.db.models.fields.files.FieldFile
-  _committed: true
-  _file: null
-  closed: false
-  name: evaluation_scripts/1ffdbe7a-56fb-4f2a-ae2c-4b58e3723bec.zip
-image: !!python/object:django.db.models.fields.files.ImageFieldFile
-  _committed: true
-  _file: null
-  closed: false
-  name: logos/e38a0a45-36a0-48c7-95a2-6423b6bb377c.jpg
-is_docker_based: false
-is_static_dataset_code_upload: false
-leaderboard:
-- id: 1
-  schema:
-    default_order_by: Total
-    labels:
-    - Metric1
-    - Metric2
-    - Metric3
-    - Total
-    metadata:
-      Metric1:
-        description: Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-        sort_ascending: true
-      Metric2:
-        description: Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-        sort_ascending: true
-leaderboard_description: Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-  Cras egestas a libero nec sagittis.
-phases:
-- allowed_submission_file_types: .json, .zip, .txt, .tsv, .gz, .csv, .h5, .npy, .npz
-  description: <p>"Sed ut perspiciatis unde omnis iste natus error sit voluptatem
-    accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo
-    inventore veritatis et quasi architecto beatae vitae dicta sunt explicabo. Nemo
-    enim ipsam voluptatem quia voluptas sit aspernatur aut odit aut fugit, sed quia
-    consequuntur magni dolores eos qui ratione voluptatem sequi nesciunt. Neque porro
-    quisquam est, qui dolorem ipsum quia dolor sit amet, consectetur, adipisci velit,
-    sed quia non numquam eius modi tempora incidunt ut labore et dolore magnam aliquam
-    quaerat voluptatem. Ut enim ad minima veniam, quis nostrum exercitationem ullam
-    corporis suscipit laboriosam, nisi ut aliquid ex ea commodi consequatur? Quis
-    autem vel eum iure reprehenderit qui in ea voluptate velit esse quam nihil molestiae
-    consequatur, vel illum qui dolorem eum fugiat quo voluptas nulla pariatur?"</p>
-  end_date: '2099-04-25 23:59:59'
-  is_partial_submission_evaluation_enabled: false
-  is_public: true
-  is_restricted_to_select_one_submission: false
-  is_submission_public: true
-  leaderboard_public: false
-  max_submissions: 50
-  max_submissions_per_day: 5
-  max_submissions_per_month: 50
-  name: Dev Phase
-  start_date: '2019-01-19 00:00:00'
-- allowed_submission_file_types: .json, .zip, .txt, .tsv, .gz, .csv, .h5, .npy
-  description: '"Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium
-    doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore veritatis
-    et quasi architecto beatae vitae dicta sunt explicabo. Nemo enim ipsam voluptatem
-    quia voluptas sit aspernatur aut odit aut fugit, sed quia consequuntur magni dolores
-    eos qui ratione voluptatem sequi nesciunt. Neque porro quisquam est, qui dolorem
-    ipsum quia dolor sit amet, consectetur, adipisci velit, sed quia non numquam eius
-    modi tempora incidunt ut labore et dolore magnam aliquam quaerat voluptatem. Ut
-    enim ad minima veniam, quis nostrum exercitationem ullam corporis suscipit laboriosam,
-    nisi ut aliquid ex ea commodi consequatur? Quis autem vel eum iure reprehenderit
-    qui in ea voluptate velit esse quam nihil molestiae consequatur, vel illum qui
-    dolorem eum fugiat quo voluptas nulla pariatur?"'
-  end_date: '2099-05-24 23:59:59'
-  is_partial_submission_evaluation_enabled: false
-  is_public: true
-  is_restricted_to_select_one_submission: false
-  is_submission_public: true
-  leaderboard_public: true
-  max_submissions: 50
-  max_submissions_per_day: 5
-  max_submissions_per_month: 50
-  name: Test Phase
-  start_date: '2019-01-01 00:00:00'
-published: true
-remote_evaluation: false
-short_description: Random number generation challenge for each submission
-start_date: '2019-01-01 00:00:00'
-submission_guidelines: <p>Submit any blank file here to see a random number generated
-  for your submission. If you get lucky, you might reach the top of the leaderboard.</p>
-tags:
-- random-number-generation
-- machine-learning
-- data-science
-- computer-vision
-terms_and_conditions: <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit,
-  sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim
-  veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo
-  consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum
-  dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident,
-  sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
-title: Sync Challenge
+# If you are not sure what all these fields mean, please refer our documentation here:
+# https://evalai.readthedocs.io/en/latest/configuration.html
+!!python/object/apply:collections.OrderedDict
+- - - title
+    - Bi Directional Sync
+  - - short_description
+    - Random number generation challenge for each submission
+  - - description
+    - "<p>\"Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium\
+      \ doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore\
+      \ veritatis et quasi architecto beatae vitae dicta sunt explicabo. Nemo enim\
+      \ ipsam voluptatem quia voluptas sit aspernatur aut odit aut fugit, sed quia\
+      \ consequuntur magni dolores eos qui ratione voluptatem sequi nesciunt. Neque\
+      \ porro quisquam est, qui dolorem ipsum quia dolor sit amet, consectetur, adipisci\
+      \ velit, sed quia non numquam eius modi tempora incidunt ut labore et dolore\
+      \ magnam aliquam quaerat voluptatem. Ut enim ad minima veniam, quis nostrum\
+      \ exercitationem ullam corporis suscipit laboriosam, nisi ut aliquid ex ea commodi\
+      \ consequatur? Quis autem vel eum iure reprehenderit qui in ea voluptate velit\
+      \ esse quam nihil molestiae consequatur, vel illum qui dolorem eum fugiat quo\
+      \ voluptas nulla pariatur?\"</p>\r\n\r\n<p>\"Sed ut perspiciatis unde omnis\
+      \ iste natus error sit voluptatem accusantium doloremque laudantium, totam rem\
+      \ aperiam, eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae\
+      \ vitae dicta sunt explicabo. Nemo enim ipsam voluptatem quia voluptas sit aspernatur\
+      \ aut odit aut fugit, sed quia consequuntur magni dolores eos qui ratione voluptatem\
+      \ sequi nesciunt. Neque porro quisquam est, qui dolorem ipsum quia dolor sit\
+      \ amet, consectetur, adipisci velit, sed quia non numquam eius modi tempora\
+      \ incidunt ut labore et dolore magnam aliquam quaerat voluptatem. Ut enim ad\
+      \ minima veniam, quis nostrum exercitationem ullam corporis suscipit laboriosam,\
+      \ nisi ut aliquid ex ea commodi consequatur? Quis autem vel eum iure reprehenderit\
+      \ qui in ea voluptate velit esse quam nihil molestiae consequatur, vel illum\
+      \ qui dolorem eum fugiat quo voluptas nulla pariatur?\"</p>"
+  - - evaluation_details
+    - <p>"Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod
+      tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam,
+      quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
+      Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore
+      eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt
+      in culpa qui officia deserunt mollit anim id est laborum."</p>
+  - - terms_and_conditions
+    - <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor
+      incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud
+      exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute
+      irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat
+      nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa
+      qui officia deserunt mollit anim id est laborum.</p>
+  - - image
+    - !!python/object:django.db.models.fields.files.ImageFieldFile
+      _committed: true
+      _file: null
+      closed: false
+      name: logos/e38a0a45-36a0-48c7-95a2-6423b6bb377c.jpg
+  - - submission_guidelines
+    - <p>Submit any blank file here to see a random number generated for your submission.
+      If you get lucky, you might reach the top of the leaderboard.</p>
+  - - leaderboard_description
+    - Lorem ipsum dolor sit amet, consectetur adipiscing elit. Cras egestas a libero
+      nec sagittis.
+  - - evaluation_script
+    - !!python/object:django.db.models.fields.files.FieldFile
+      _committed: true
+      _file: null
+      closed: false
+      name: evaluation_scripts/1ffdbe7a-56fb-4f2a-ae2c-4b58e3723bec.zip
+  - - remote_evaluation
+    - false
+  - - start_date
+    - '2019-01-01 00:00:00'
+  - - end_date
+    - '2099-05-31 23:59:59'
+  - - published
+    - true
