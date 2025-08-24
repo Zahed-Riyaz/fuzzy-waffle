@@ -156,7 +156,7 @@ description: "<p>\"Sed ut perspiciatis unde omnis iste natus error sit voluptate
   \ nisi ut aliquid ex ea commodi consequatur? Quis autem vel eum iure reprehenderit\
   \ qui in ea voluptate velit esse quam nihil molestiae consequatur, vel illum qui\
   \ dolorem eum fugiat quo voluptas nulla pariatur?\"</p>"
-end_date: 2099-05-31 23:59:59
+end_date: 2099-05-31 23:59:59+00:00
 evaluation_details: <p>"Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed
   do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim
   veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo
@@ -221,7 +221,7 @@ phases:
     nisi ut aliquid ex ea commodi consequatur? Quis autem vel eum iure reprehenderit
     qui in ea voluptate velit esse quam nihil molestiae consequatur, vel illum qui
     dolorem eum fugiat quo voluptas nulla pariatur?"'
-  end_date: 2099-05-24 23:59:59+00:00
+  end_date: 2099-05-24 23:59:59
   is_partial_submission_evaluation_enabled: false
   is_public: true
   is_restricted_to_select_one_submission: false
@@ -231,11 +231,11 @@ phases:
   max_submissions_per_day: 5
   max_submissions_per_month: 50
   name: Test Phase
-  start_date: 2019-01-01 00:00:00+00:00
+  start_date: 2019-01-01 00:00:00
 published: true
 remote_evaluation: false
 short_description: Random number generation challenge for each submission
-start_date: 2019-01-01 00:00:00
+start_date: 2019-01-01 00:00:00+00:00
 submission_guidelines: <p>Submit any blank file here to see a random number generated
   for your submission. If you get lucky, you might reach the top of the leaderboard.</p>
 tags:
@@ -249,4 +249,4 @@ terms_and_conditions: <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit
   consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum
   dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident,
   sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
-title: Test Challenge
+title: Sync Challenge Test
