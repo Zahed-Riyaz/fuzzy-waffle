@@ -163,8 +163,16 @@ evaluation_details: <p>"Lorem ipsum dolor sit amet, consectetur adipiscing elit,
   consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum
   dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident,
   sunt in culpa qui officia deserunt mollit anim id est laborum."</p>
-evaluation_script: evaluation_script.zip
-image: logo.jpg
+evaluation_script: !!python/object:django.db.models.fields.files.FieldFile
+  _committed: true
+  _file: null
+  closed: false
+  name: evaluation_scripts/1ffdbe7a-56fb-4f2a-ae2c-4b58e3723bec.zip
+image: !!python/object:django.db.models.fields.files.ImageFieldFile
+  _committed: true
+  _file: null
+  closed: false
+  name: logos/e38a0a45-36a0-48c7-95a2-6423b6bb377c.jpg
 is_docker_based: false
 is_static_dataset_code_upload: false
 leaderboard:
@@ -249,4 +257,4 @@ terms_and_conditions: <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit
   consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum
   dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident,
   sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
-title: Sync Test Challenge
+title: Sync Challenge
