@@ -1,72 +1,30 @@
 # If you are not sure what all these fields mean, please refer our documentation here:
 # https://evalai.readthedocs.io/en/latest/configuration.html
-title: Test Challenge
-short_description: Random number generation challenge for each submission
-description: "<p>\"Sed ut perspiciatis unde omnis iste natus error sit voluptatem\
-  \ accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo\
-  \ inventore veritatis et quasi architecto beatae vitae dicta sunt explicabo. Nemo\
-  \ enim ipsam voluptatem quia voluptas sit aspernatur aut odit aut fugit, sed quia\
-  \ consequuntur magni dolores eos qui ratione voluptatem sequi nesciunt. Neque porro\
-  \ quisquam est, qui dolorem ipsum quia dolor sit amet, consectetur, adipisci velit,\
-  \ sed quia non numquam eius modi tempora incidunt ut labore et dolore magnam aliquam\
-  \ quaerat voluptatem. Ut enim ad minima veniam, quis nostrum exercitationem ullam\
-  \ corporis suscipit laboriosam, nisi ut aliquid ex ea commodi consequatur? Quis\
-  \ autem vel eum iure reprehenderit qui in ea voluptate velit esse quam nihil molestiae\
-  \ consequatur, vel illum qui dolorem eum fugiat quo voluptas nulla pariatur?\"</p>\r\
-  \n\r\n<p>\"Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium\
-  \ doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore veritatis\
-  \ et quasi architecto beatae vitae dicta sunt explicabo. Nemo enim ipsam voluptatem\
-  \ quia voluptas sit aspernatur aut odit aut fugit, sed quia consequuntur magni dolores\
-  \ eos qui ratione voluptatem sequi nesciunt. Neque porro quisquam est, qui dolorem\
-  \ ipsum quia dolor sit amet, consectetur, adipisci velit, sed quia non numquam eius\
-  \ modi tempora incidunt ut labore et dolore magnam aliquam quaerat voluptatem. Ut\
-  \ enim ad minima veniam, quis nostrum exercitationem ullam corporis suscipit laboriosam,\
-  \ nisi ut aliquid ex ea commodi consequatur? Quis autem vel eum iure reprehenderit\
-  \ qui in ea voluptate velit esse quam nihil molestiae consequatur, vel illum qui\
-  \ dolorem eum fugiat quo voluptas nulla pariatur?\"</p>"
-evaluation_details: <p>"Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed
-  do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim
-  veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo
-  consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum
-  dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident,
-  sunt in culpa qui officia deserunt mollit anim id est laborum."</p>
-terms_and_conditions: <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit,
-  sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim
-  veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo
-  consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum
-  dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident,
-  sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
-image: logos/cb4fa147-3d04-4083-9efe-f33a4060ac9c.jpg
-submission_guidelines: <p>Submit any blank file here to see a random number generated
-  for your submission. If you get lucky, you might reach the top of the leaderboard.</p>
-leaderboard_description: Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-  Cras egestas a libero nec sagittis.
-evaluation_script: evaluation_scripts/e8d969b8-abe4-4a96-b10d-a3c7a14b2ebd.zip
-remote_evaluation: false
-start_date: '2019-01-01 00:00:00'
-end_date: '2099-05-31 23:59:59'
-published: true
-tags:
-- random-number-generation
-- machine-learning
-- data-science
-- computer-vision
-leaderboard:
-- id: 1
-  schema:
-    default_order_by: Total
-    labels:
-    - Metric1
-    - Metric2
-    - Metric3
-    - Total
-    metadata:
-      Metric1:
-        description: Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-        sort_ascending: true
-      Metric2:
-        description: Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-        sort_ascending: true
+challenge_phase_splits:
+- challenge_phase_id: 1
+  dataset_split_id: 1
+  is_leaderboard_order_descending: true
+  leaderboard_decimal_precision: 2
+  leaderboard_id: 1
+  show_execution_time: true
+  show_leaderboard_by_latest_submission: true
+  visibility: 1
+- challenge_phase_id: 2
+  dataset_split_id: 1
+  is_leaderboard_order_descending: true
+  leaderboard_decimal_precision: 2
+  leaderboard_id: 1
+  show_leaderboard_by_latest_submission: false
+  showeceution_time: false
+  visibility: 3
+- challenge_phase_id: 2
+  dataset_split_id: 2
+  is_leaderboard_order_descending: true
+  leaderboard_decimal_precision: 2
+  leaderboard_id: 1
+  show_execution_time: true
+  show_leaderboard_by_latest_submission: true
+  visibility: 1
 challenge_phases:
 - allowed_email_ids: []
   allowed_submission_file_types: .json, .zip, .txt, .tsv, .gz, .csv, .h5, .npy, .npz
@@ -178,28 +136,70 @@ dataset_splits:
 - codename: test_split
   id: 2
   name: Test Split
-challenge_phase_splits:
-- challenge_phase_id: 1
-  dataset_split_id: 1
-  is_leaderboard_order_descending: true
-  leaderboard_decimal_precision: 2
-  leaderboard_id: 1
-  show_execution_time: true
-  show_leaderboard_by_latest_submission: true
-  visibility: 1
-- challenge_phase_id: 2
-  dataset_split_id: 1
-  is_leaderboard_order_descending: true
-  leaderboard_decimal_precision: 2
-  leaderboard_id: 1
-  show_leaderboard_by_latest_submission: false
-  showeceution_time: false
-  visibility: 3
-- challenge_phase_id: 2
-  dataset_split_id: 2
-  is_leaderboard_order_descending: true
-  leaderboard_decimal_precision: 2
-  leaderboard_id: 1
-  show_execution_time: true
-  show_leaderboard_by_latest_submission: true
-  visibility: 1
+description: "<p>\"Sed ut perspiciatis unde omnis iste natus error sit voluptatem\
+  \ accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo\
+  \ inventore veritatis et quasi architecto beatae vitae dicta sunt explicabo. Nemo\
+  \ enim ipsam voluptatem quia voluptas sit aspernatur aut odit aut fugit, sed quia\
+  \ consequuntur magni dolores eos qui ratione voluptatem sequi nesciunt. Neque porro\
+  \ quisquam est, qui dolorem ipsum quia dolor sit amet, consectetur, adipisci velit,\
+  \ sed quia non numquam eius modi tempora incidunt ut labore et dolore magnam aliquam\
+  \ quaerat voluptatem. Ut enim ad minima veniam, quis nostrum exercitationem ullam\
+  \ corporis suscipit laboriosam, nisi ut aliquid ex ea commodi consequatur? Quis\
+  \ autem vel eum iure reprehenderit qui in ea voluptate velit esse quam nihil molestiae\
+  \ consequatur, vel illum qui dolorem eum fugiat quo voluptas nulla pariatur?\"</p>\r\
+  \n\r\n<p>\"Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium\
+  \ doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore veritatis\
+  \ et quasi architecto beatae vitae dicta sunt explicabo. Nemo enim ipsam voluptatem\
+  \ quia voluptas sit aspernatur aut odit aut fugit, sed quia consequuntur magni dolores\
+  \ eos qui ratione voluptatem sequi nesciunt. Neque porro quisquam est, qui dolorem\
+  \ ipsum quia dolor sit amet, consectetur, adipisci velit, sed quia non numquam eius\
+  \ modi tempora incidunt ut labore et dolore magnam aliquam quaerat voluptatem. Ut\
+  \ enim ad minima veniam, quis nostrum exercitationem ullam corporis suscipit laboriosam,\
+  \ nisi ut aliquid ex ea commodi consequatur? Quis autem vel eum iure reprehenderit\
+  \ qui in ea voluptate velit esse quam nihil molestiae consequatur, vel illum qui\
+  \ dolorem eum fugiat quo voluptas nulla pariatur?\"</p>"
+end_date: '2099-05-31 23:59:59'
+evaluation_details: <p>"Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed
+  do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim
+  veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo
+  consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum
+  dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident,
+  sunt in culpa qui officia deserunt mollit anim id est laborum."</p>
+evaluation_script: evaluation_scripts/e8d969b8-abe4-4a96-b10d-a3c7a14b2ebd.zip
+image: logos/cb4fa147-3d04-4083-9efe-f33a4060ac9c.jpg
+leaderboard:
+- id: 1
+  schema:
+    default_order_by: Total
+    labels:
+    - Metric1
+    - Metric2
+    - Metric3
+    - Total
+    metadata:
+      Metric1:
+        description: Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+        sort_ascending: true
+      Metric2:
+        description: Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+        sort_ascending: true
+leaderboard_description: Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+  Cras egestas a libero nec sagittis.
+published: true
+remote_evaluation: false
+short_description: Random number generation challenge for each submission
+start_date: '2019-01-01 00:00:00'
+submission_guidelines: <p>Submit any blank file here to see a random number generated
+  for your submission. If you get lucky, you might reach the top of the leaderboard.</p>
+tags:
+- random-number-generation
+- machine-learning
+- data-science
+- computer-vision
+terms_and_conditions: <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit,
+  sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim
+  veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo
+  consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum
+  dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident,
+  sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
+title: Synccc
